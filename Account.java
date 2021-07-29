@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 public class Account {
     private String userName;
-    private static int identifier = 0;
     private String password;
     ArrayList<String> users;
     static CSVReadWrite accounts = new CSVReadWrite("users.csv");
@@ -21,10 +20,9 @@ public class Account {
 
     public Boolean signUp() throws IOException {
         if(!checkIfExist(userName, 1)) {
-            CSVReadWrite accounts = new CSVReadWrite("users.csv");
-            identifier++;
+            //got rid of line that made new csvReader since that stopped it from working
             update();
-            accounts.append(toString());
+            accounts.append(this.toString());
             update();
             return true;
         } else {
@@ -111,7 +109,7 @@ public class Account {
     }
 
     public String toString() {
-        return String.format("%d,%s,%s", identifier, userName, password);
+        return String.format("%s,%s", userName, password);
     }
 
 }
