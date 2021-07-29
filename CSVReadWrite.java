@@ -38,7 +38,6 @@ public class CSVReadWrite {
                     this.lines.add(line);
                 } while ((line = br.readLine()) != null);
                 br.close();
-                fr.close();
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -52,10 +51,11 @@ public class CSVReadWrite {
     }
 
     //the string toAppend make sure the values are separated by commas or it won't work
+    //handles the index part so nobody has to worry about that part.
     public void append(String toAppend) throws IOException {
         try (FileWriter writer = new FileWriter(this.fileName, true)) {
-            writer.write(toAppend + "\n");
-            writer.close();
+            String index = String.valueOf(Integer.parseInt(this.lines.get(this.lines.size() - 1).split(",")[0]) + 1) + ",";
+            writer.write(index + toAppend + "\n");
         }
     }
 
@@ -66,20 +66,22 @@ public class CSVReadWrite {
             for (String line : this.lines) {
                 writer.write(line + "\n");
             }
-            writer.close();
         }
     }
 
 
     //three inputs index of the identifier being use, the identifier that is used, and the string I want to write to file
     //once it finds the first instance of the identifier it stops looking and work on that.
+    //handles the index part of this so that is not something that needs to be worried about.
     public void replaceLine(int identifierIndex, String identifier, String replacement) throws IOException {
         //go through lines to find where it is equal
         int counter = 0;
         for (String line : this.lines) {
             if (line.split(",")[identifierIndex].equals(identifier)) {
+                //gets index of line being replaced and takes that index spot now
+                String index = line.split(",")[0];
                 //if it is equals it goes to the lines list and replaces it
-                this.lines.set(counter, replacement);
+                this.lines.set(counter, index + "," + replacement);
                 // rewrites all lines
                 this.writeLines();
                 break;
@@ -101,15 +103,20 @@ public class CSVReadWrite {
     }
 
 
-        //main exists to show off the example
-        public static void main (String[]args) throws IOException {
-            // if the csv is in the project folder then it should be able to read it with just the name of the file
-            CSVReadWrite test = new CSVReadWrite("users.csv");
-            //once the object is created you need to read the file to update it
-            test.readFile();
-            for (String line : test.getLines()) {
-                System.out.println(line);
-            }
-        }
+    //main exists to show off the example
+    public static void main(String[] args) throws IOException {
+        // if the csv is in the project folder then it should be able to read it with just the name of the file
+        CSVReadWrite test = new CSVReadWrite("TestFile.csv");
+        //once the object is created you need to read the file to update it
+        test.readFile();
 
+        //replaces the line where it has mac with dee, handles the index by itself
+        test.replaceLine(1,"mac","dee");
+        //appends bubbles to the  csv and handles the index part
+        test.append("Bubbles");
+        test.readFile();
+        for (String line : test.getLines()) {
+            System.out.println(line);
+        }
+    }
 }
