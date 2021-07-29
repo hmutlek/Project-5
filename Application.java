@@ -24,16 +24,21 @@ public class Application {
             switch (choice) {
                 case "1" :
                     Account user = new Account();
-                    System.out.println("Please enter your username:");
-                    username = scan.nextLine();
-                    System.out.println("Please enter your password:");
-                    password = scan.nextLine();
-                    if (user.logIn(username, password)) {
-                        System.out.println("Logged in");
-                        break;
-                    } else {
-                        System.out.println("Log in failed, please check your username or password");
-                    }
+                    boolean userCheck = false;
+                    do {
+                        userCheck = false;
+                        System.out.println("Please enter your username:");
+                        username = scan.nextLine();
+                        System.out.println("Please enter your password:");
+                        password = scan.nextLine();
+                        if (user.logIn(username, password)) {
+                            System.out.println("Logged in");
+                            userCheck = true;
+                        } else {
+                            System.out.println("Log in failed, please check your username or password");
+                        }
+                    } while (!userCheck);
+                    break;
 
 
                 case "2" :
@@ -44,10 +49,10 @@ public class Application {
                     Account newUser = new Account(username, password);
                     if (newUser.signUp()) {
                         System.out.println("Signed up");
-                        break;
                     } else {
                         System.out.println("Sign up failed, the username is already in use");
                     }
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
