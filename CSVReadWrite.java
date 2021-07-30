@@ -59,6 +59,13 @@ public class CSVReadWrite {
         }
     }
 
+    //same append function but the index is not done automatically if needed.
+    public void indexAppend(String toAppend) throws IOException {
+        try (FileWriter writer = new FileWriter(this.fileName, true)) {
+            writer.write(toAppend + "\n");
+        }
+    }
+
 
     //Writes all lines in object.lines to the file they are part of
     public void writeLines() throws IOException {
@@ -90,6 +97,21 @@ public class CSVReadWrite {
         }
     }
 
+    //same replace line method but without the index done automatically
+    public void indexReplaceLine(int identifierIndex, String identifier, String replacement) throws IOException {
+        int counter = 0;
+        for (String line : this.lines) {
+            if (line.split(",")[identifierIndex].equals(identifier)) {
+                //if it is equals it goes to the lines list and replaces it
+                this.lines.set(counter, replacement);
+                // rewrites all lines
+                this.writeLines();
+                break;
+            }
+            counter++;
+        }
+    }
+
     public void removeLine(int identifierIndex, String identifier) throws IOException {
         int counter = 0;
         for (String line : this.lines) {
@@ -100,6 +122,11 @@ public class CSVReadWrite {
             }
             counter++;
         }
+    }
+
+    //returns an String of what the next index value is going to be
+    public String getNextIndex() {
+        return String.valueOf(Integer.parseInt(this.lines.get(this.lines.size() - 1).split(",")[0]) + 1);
     }
 
 
@@ -113,7 +140,7 @@ public class CSVReadWrite {
         //replaces the line where it has mac with dee, handles the index by itself
         test.replaceLine(1,"mac","dee");
         //appends bubbles to the  csv and handles the index part
-        test.append("Bubbles");
+        System.out.println(test.getNextIndex());
         test.readFile();
         for (String line : test.getLines()) {
             System.out.println(line);
