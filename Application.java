@@ -21,105 +21,105 @@ public class Application {
         String username;
         String password;
         choice = welcome();
+        Boolean ifContinue = true;
         Account user = new Account();
 
 
         //the following codes are used to test login and signup options
-        try {
-            switch (choice) {
-                case "1" :
-                    user = new Account();
-                    System.out.println("Please enter your username:");
-                    username = scan.nextLine();
-                    System.out.println("Please enter your password:");
-                    password = scan.nextLine();
-                    if (user.logIn(username, password)) {
-                        System.out.println("Logged in");
-                        user.getIdentifier();
+        do {
+            try {
+                switch (choice) {
+                    case "1" :
+                        user = new Account();
+                        System.out.println("Please enter your username:");
+                        username = scan.nextLine();
+                        System.out.println("Please enter your password:");
+                        password = scan.nextLine();
+                        if (user.logIn(username, password)) {
+                            System.out.println("Logged in");
+                            user.getIdentifier();
+                            ifContinue = false;
+                        } else {
+                            System.out.println("Log in failed, please check your username or password");
+                            choice = welcome();
+                        }
                         break;
-                    } else {
-                        System.out.println("Log in failed, please check your username or password");
+
+
+
+                    case "2" :
+                        System.out.println("Please enter your username:");
+                        username = scan.nextLine();
+                        System.out.println("Please enter your password:");
+                        password = scan.nextLine();
+                        user = new Account(username, password);
+                        if (user.signUp()) {
+                            System.out.println("Signed up");
+                            user.getIdentifier();
+                            ifContinue = false;
+                        } else {
+                            System.out.println("Sign up failed, the username is already in use");
+                            choice = welcome();
+                        }
+                        break;
+
+                    case "exit" :
+                        break;
+
+                    default :
+                        System.out.println("please enter a valid input");
                         choice = welcome();
-                    }
-
-
-                case "2" :
-                    System.out.println("Please enter your username:");
-                    username = scan.nextLine();
-                    System.out.println("Please enter your password:");
-                    password = scan.nextLine();
-                    user = new Account(username, password);
-                    if (user.signUp()) {
-                        System.out.println("Signed up");
-                        user.getIdentifier();
                         break;
-                    } else {
-                        System.out.println("Sign up failed, the username is already in use");
-                        choice = welcome();
-                    }
-
-                case "exit" :
-                    break;
-
-                default :
-                    System.out.println("please enter a valid input");
-                    choice = welcome();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("oops, IOException occurred.");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("oops, IOException occurred.");
-        }
+        } while (ifContinue && !choice.equals("exit"));
 
-        System.out.println("What would you like to do?\n" +
-            "1. change username     2. change password      3.delete account");
-        choice = scan.nextLine();
-
-        //now it's testing account modification
-        try {
-            switch (choice) {
-                case "1" :
-                    System.out.println("please enter a new username");
-                    String temp = scan.nextLine();
-                    if (user.changeUserName(temp)) {
-                        System.out.println("username changed successfully.");
-                        System.out.println("What would you like to do?\n" +
-                            "1. change username     2. change password      3.delete account");
-                        choice = scan.nextLine();
-                    } else {
-                        System.out.println("username is already been used");
-                        System.out.println("What would you like to do?\n" +
-                            "1. change username     2. change password      3.delete account");
-                        choice = scan.nextLine();
-                    }
-
-                case "2" :
-                    System.out.println("please enter a new password");
-                    temp = scan.nextLine();
-                    if (user.changePassword(temp)) {
-                        System.out.println("password changed successfully.");
-                        System.out.println("What would you like to do?\n" +
-                            "1. change username     2. change password      3.delete account");
-                        choice = scan.nextLine();
-                    } else {
-                        System.out.println("password failed to be changed");
-                        System.out.println("What would you like to do?\n" +
-                            "1. change username     2. change password      3.delete account");
-                        choice = scan.nextLine();
-                    }
-
-                case "3" :
-                    System.out.println("Are you sure you want to change the password?");
-                    temp = scan.nextLine();
-                    if (temp.equalsIgnoreCase("yes")) {
-                        user.deleteAccount();
-                        System.out.println("account deleted");
+        //the following do while loop test account modification
+        ifContinue = true;
+        do {
+            System.out.println("What would you like to do?\n" +
+                "1. change username     2. change password      3.delete account");
+            choice = scan.nextLine();
+            try {
+                switch (choice) {
+                    case "1" :
+                        System.out.println("please enter a new username");
+                        String temp = scan.nextLine();
+                        if (user.changeUserName(temp)) {
+                            System.out.println("username changed successfully.");
+                        } else {
+                            System.out.println("username is already been used");
+                        }
                         break;
-                    } else {
-                        System.out.println("going back...");
-                    }
+
+                    case "2" :
+                        System.out.println("please enter a new password");
+                        temp = scan.nextLine();
+                        if (user.changePassword(temp)) {
+                            System.out.println("password changed successfully.");
+                        } else {
+                            System.out.println("failed to change password");
+                        }
+                        break;
+
+                    case "3" :
+                        System.out.println("Are you sure you want to change the password?");
+                        temp = scan.nextLine();
+                        if (temp.equalsIgnoreCase("yes")) {
+                            user.deleteAccount();
+                            System.out.println("account deleted");
+                        } else {
+                            System.out.println("going back...");
+                        }
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } while (ifContinue && !choice.equals("exit"));
+
     }
 }
