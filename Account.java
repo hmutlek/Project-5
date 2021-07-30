@@ -5,12 +5,23 @@ public class Account {
     private String userName;
     private String password;
     ArrayList<String> users;
+    private String identifier;
     static CSVReadWrite accounts = new CSVReadWrite("users.csv");
 
     //used for sign up
     public Account(String userName, String password) throws IOException {
         this.userName = userName;
         this.password = password;
+    }
+
+    public void getIdentifier() throws IOException {
+        accounts.readFile();
+        users = accounts.getLines();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).split(",")[1].equals(userName)) {
+                this.identifier = users.get(i).split(",")[0];
+            }
+        }
     }
 
     public void update() throws IOException {
@@ -55,7 +66,7 @@ public class Account {
         accounts.readFile();
         users = accounts.getLines();
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).split(",")[identifierIndex].equals(userName)) {
+            if (users.get(i).split(",")[identifierIndex].equals(input)) {
                 return true;
             }
         }
@@ -79,32 +90,30 @@ public class Account {
         if (checkIfExist(userName, 1)) {
             return false;
         }
-
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).split(",")[1].equals(userName)) {
-                users.get(i).split(",")[1] = userName;
-                accounts.replaceLine(1, this.userName, toString());
+            if (users.get(i).split(",")[1].equals(this.userName)) {
+                this.userName = userName;
+                accounts.replaceLine(0, identifier, toString());
+                update();
                 break;
             }
         }
-        this.userName = userName;
         return true;
-
     }
 
     public Boolean changePassword(String password) throws IOException {
-        if (checkIfExist(userName, 2)) {
+        if (!checkIfExist(userName, 1)) {
             return false;
         }
 
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).split(",")[1].equals(userName)) {
-                users.get(i).split(",")[2] = password;
-                accounts.replaceLine(1, this.userName, toString());
+                this.password = password;
+                accounts.replaceLine(0, identifier, toString());
+                update();
                 break;
             }
         }
-        this.password = password;
         return true;
     }
 
