@@ -5,13 +5,19 @@ public class Account {
     private String userName;
     private String password;
     ArrayList<String> users;
-    private String identifier;
+    public String identifier;
     static CSVReadWrite accounts = new CSVReadWrite("users.csv");
 
     //used for sign up
     public Account(String userName, String password) throws IOException {
         this.userName = userName;
         this.password = password;
+    }
+
+    public Account (String userName, String password, String identifier) {
+        this.userName = userName;
+        this.password = password;
+        this.identifier = identifier;
     }
 
     public void getIdentifier() throws IOException {
@@ -24,6 +30,10 @@ public class Account {
         }
     }
 
+
+    public String getUserName() {
+        return this.userName;
+    }
     public void update() throws IOException {
         accounts.readFile();
         users = accounts.getLines();
