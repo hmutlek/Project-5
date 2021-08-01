@@ -57,7 +57,7 @@ public class CSVReadWrite {
             String index = String.valueOf(Integer.parseInt(this.lines.get(this.lines.size() - 1).split(",")[0]) + 1) + ",";
             writer.newLine();
             writer.write(index + toAppend);
-
+            writer.flush();
         }
     }
 
