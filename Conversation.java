@@ -11,26 +11,40 @@ public class Conversation {
     static CSVReadWrite conversations = new CSVReadWrite("Conversations.csv");
 
     //makes a new conversation object and adds it to the list of conversations
+    //member array should be indexes of the members
     public Conversation(String[] members) {
+        StringBuilder groupName = new StringBuilder();
+        CSVReadWrite users = new CSVReadWrite("users.csv");
+        try {
+            users.readFile();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         this.groupMembers = members;
+
+        int i = 0;
+        Account fakeTest = new Account("placeholder", "Placeholder", "90");
+        for (String index : members) {
+            if (i++ == members.length -1) {
+                groupName.append(fakeTest.getUserFromIndex(index));
+                break;
+            }
+            groupName.append(fakeTest.getUserFromIndex(index));
+            groupName.append(" & ");
+        }
+
+        //automatically adds new conversation to csv
+        this.name = groupName.toString();
         try {
             conversations.readFile();
-            this.index = conversations.getNextIndex();
             conversations.append(this.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        StringBuilder groupName = new StringBuilder();
-        int i = 0;
-        for (String name : members) {
-            if (i++ == members.length - 1) {
-                groupName.append(name);
-                break;
-            }
-            groupName.append(name);
-            groupName.append(" & ");
-        }
+
     }
+
     //makes a conversation object for a conversation that already exists in the csv file
     public Conversation(String[] members, String index, String name) {
         this.groupMembers = members;
@@ -51,10 +65,11 @@ public class Conversation {
             members.append(member);
             members.append("~");
         }
-        return String.format("%s,%s,%s", this.index, members, this.name);
+        return String.format("%s,%s", members, this.name);
 
     }
 
+    //gets conversation with a given index and returns a conversation object
     public Conversation getConversation(String index) {
         String tempLine = "";
         try {
@@ -74,7 +89,7 @@ public class Conversation {
         return tempConversation;
     }
 
-    //gets all messages from
+    //gets all messages for a conversation, taking an index as input
     public StringBuilder getMessages(String index) {
         StringBuilder messagesString = new StringBuilder();
         try {
@@ -92,7 +107,7 @@ public class Conversation {
         return messagesString;
 
     }
-    //gets all messages from
+    //gets all messages for a conversation but this one is just conversation.getMessages() with no input
     public StringBuilder getMessages() {
         StringBuilder messagesString = new StringBuilder();
         try {
@@ -111,6 +126,7 @@ public class Conversation {
 
     }
 
+    //Takes input of a list of conversation indexes and returns a string to print to print the names of them
     public String getConversations(ArrayList<String> conversationIndex) {
         try {
             conversations.readFile();
@@ -131,7 +147,6 @@ public class Conversation {
             //print conversation name if it works
         }
 
-
         System.out.println("input a number of which conversation you want to view");
         //take input from user of which one they want to select
         //0 is quit
@@ -150,15 +165,79 @@ public class Conversation {
             return "QUIT";
         } else {
             //returns the index of the selected array
-            for (String line : conversationArray) {
-                System.out.println(line);
-            }
-            System.out.println("end of conversation array");
-            System.out.println(conversationArray[choice - 1]);
             return conversationArray[choice - 1];
         }
     }
 
+    //makes a new conversation by taking inputs of who to add
+    //if a user does not exist in users.csv then it says user does not exist
+    public void newConversation(Account user) {
+        Scanner scan = new Scanner(System.in);
+        StringBuilder members = new StringBuilder();
+        CSVReadWrite users = new CSVReadWrite("users.csv");
+        try {
+
+            users.readFile();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String toAdd = "";
+        String goAgain = "";
+        try {
+            members.append(user.getIdentifier());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        do {
+            System.out.println("Enter username of person to add to conversation");
+            toAdd = scan.nextLine();
+            boolean nameExist = false;
+            for (String line : users.getLines()) {
+                if (line.split(",")[1].equals(toAdd)) {
+                    members.append("~");
+                    members.append(line.split(",")[0]);
+                    nameExist = true;
+                }
+            }
+
+            if (nameExist) {
+                System.out.println("Would you like to add another person y/n");
+                goAgain = scan.nextLine();
+            } else {
+                goAgain = "y";
+                System.out.println("That username does not exist please enter a new one");
+            }
+        } while (goAgain.equals("y"));
+        String[] memberString = members.toString().split("~");
+        Conversation tempName = new Conversation(memberString);
+    }
+
+    //used to get the conversations list that a user is in to be used in getConversations()
+    public ArrayList<String> inConversations(Account user) {
+        try {
+            conversations.readFile();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Scanner scan = new Scanner(System.in);
+        //getting conversations the user is in.
+        ArrayList<String> conversationList = new ArrayList<>();
+        String users;
+        for (String line : conversations.getLines()) {
+            users = line.split(",")[1];
+            String[] userArray = users.split("~");
+            for (String index : userArray) {
+                if (index.equals(user.identifier)) {
+                    //add conversation to list of conversations
+                    conversationList.add(line.split(",")[0]);
+                    break;
+                }
+            }
+        }
+        return conversationList;
+    }
+
+    //to run this all it needs is a user input
     public void runConversation(Account user) {
         try {
             conversations.readFile();
@@ -180,33 +259,37 @@ public class Conversation {
                 }
             }
         }
+
+        if (conversationList.size() == 0) {
+            System.out.println("You have no conversations");
+        }
         //here is the error does not print the things I want
         String result = getConversations(conversationList);
         if (result.equals("QUIT")) {
             //break this in some way
         }
 
-
         Conversation activeConversation = getConversation(result);
         System.out.println(activeConversation.getMessages(result));
         int choice;
         //first do loops the whole thing
         do {
-            System.out.println("WHat would you like to do?");
+            System.out.println("What would you like to do?");
             //this do loop just makes it so that the choice is valid
             do {
-                System.out.println("1. go back to conversations, 2. send message, 3. quit");
+                System.out.println("1. go back to conversations, 2. send message, 3. quit, 4 begin new conversation");
 
                 choice = Integer.parseInt(scan.nextLine());
-                if (choice != 1 && choice != 2 && choice != 3) {
-                    System.out.println("Please select 1, 2, or 3");
+                if (choice != 1 && choice != 2 && choice != 3 && choice != 4) {
+                    System.out.println("Please select 1, 2, 3, or 4");
                 }
-            } while (choice != 1 && choice != 2 && choice != 3);
+            } while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
 
 
             //switch statement with options of what to do
             switch(choice) {
                 case (1):
+                    conversationList = inConversations(user);
                     result = getConversations(conversationList);
                     if (result.equals("QUIT")) {
                         break;
@@ -224,15 +307,13 @@ public class Conversation {
                     break;
 
                 case (3):
+                    //quits out, in a weird spot since this will be made into a gui
                     break;
+                case(4):
+                    //makes new conversation using method made earlier
+                    newConversation(user);
                 }
-
-
         } while (choice != 3);
-        //gets messages here and shows them
-        //after showing ask the user what they would like to do
-        //user either quits, looks at other conversations, send message
-        //loop that part until they quit.
     }
 
     public static void main(String[] args) {

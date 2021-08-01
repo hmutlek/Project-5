@@ -53,9 +53,11 @@ public class CSVReadWrite {
     //the string toAppend make sure the values are separated by commas or it won't work
     //handles the index part so nobody has to worry about that part.
     public void append(String toAppend) throws IOException {
-        try (FileWriter writer = new FileWriter(this.fileName, true)) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.fileName, true))) {
             String index = String.valueOf(Integer.parseInt(this.lines.get(this.lines.size() - 1).split(",")[0]) + 1) + ",";
-            writer.write(index + toAppend + "\n");
+            writer.newLine();
+            writer.write(index + toAppend);
+
         }
     }
 

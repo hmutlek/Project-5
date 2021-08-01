@@ -20,7 +20,7 @@ public class Account {
         this.identifier = identifier;
     }
 
-    public void getIdentifier() throws IOException {
+    public String getIdentifier() throws IOException {
         accounts.readFile();
         users = accounts.getLines();
         for (int i = 0; i < users.size(); i++) {
@@ -28,6 +28,7 @@ public class Account {
                 this.identifier = users.get(i).split(",")[0];
             }
         }
+        return this.identifier;
     }
 
 
@@ -49,6 +50,15 @@ public class Account {
         } else {
             return false;
         }
+    }
+    public String getUserFromIndex(String index) {
+        String toReturn = "";
+        for (String line : accounts.getLines()) {
+            if (line.split(",")[0].equals(index)) {
+                toReturn = line.split(",")[1];
+            }
+        }
+        return toReturn;
     }
 
     //used for log in

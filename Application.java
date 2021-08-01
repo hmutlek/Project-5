@@ -81,7 +81,7 @@ public class Application {
         ifContinue = true;
         do {
             System.out.println("What would you like to do?\n" +
-                "1. change username     2. change password      3.delete account");
+                "1. change username     2. change password      3.delete account    4. go to conversations");
             choice = scan.nextLine();
             try {
                 switch (choice) {
@@ -115,6 +115,14 @@ public class Application {
                             System.out.println("going back...");
                         }
                         break;
+
+                    case "4":
+                        //method can only run if on a conversation object
+                        //so I make a conversation object that does not get added on to conversations.csv
+                        //the only thing it does is exist so runConversation can happen
+                        String[] tempStrings = new String[]{"me"};
+                        Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
+                        tempConvo.runConversation(user);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
