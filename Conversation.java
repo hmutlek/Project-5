@@ -262,6 +262,8 @@ public class Conversation {
 
         if (conversationList.size() == 0) {
             System.out.println("You have no conversations");
+            conversationList.add(conversations.getNextIndex());
+            newConversation(user);
         }
         //here is the error does not print the things I want
         String result = getConversations(conversationList);
