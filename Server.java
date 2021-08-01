@@ -25,6 +25,7 @@ public class Server {
     public static void main (String[] args) throws IOException {
         String username;
         String password;
+        int port;
         choice = welcome();
         Boolean ifContinue = true;
         Account user = new Account();
@@ -63,6 +64,10 @@ public class Server {
                             username = scan.nextLine();
                             System.out.println("Please enter your password:");
                             password = scan.nextLine();
+                            if (username.equals("deletedAccount")) {
+                                System.out.println("Sorry, it is a reserved word. Please use another username!");
+                                break;
+                            }
                             user = new Account(username, password);
                             if (user.signUp()) {
                                 System.out.println("Signed up");
