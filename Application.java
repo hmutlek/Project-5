@@ -79,7 +79,11 @@ public class Application {
 
         //the following do while loop test account modification
         ifContinue = true;
+        Boolean ifDeleted = false;
         do {
+            if (ifDeleted) {
+                break;
+            }
             System.out.println("What would you like to do?\n" +
                 "1. change username     2. change password      3.delete account    4. go to conversations");
             choice = scan.nextLine();
@@ -106,11 +110,12 @@ public class Application {
                         break;
 
                     case "3" :
-                        System.out.println("Are you sure you want to change the password?");
+                        System.out.println("Are you sure you want to delete your account?(type yes to confirm)");
                         temp = scan.nextLine();
                         if (temp.equalsIgnoreCase("yes")) {
                             user.deleteAccount();
                             System.out.println("account deleted");
+                            ifDeleted = true;
                         } else {
                             System.out.println("going back...");
                         }
