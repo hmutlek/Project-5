@@ -94,7 +94,7 @@ public class Account {
     }
 
     public boolean deleteAccount() throws IOException {
-        accounts.removeLine(1, userName);
+        accounts.replaceLine(1, userName, "deletedAccount, ajsdfnjksdnfskdj1");
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).split(",")[1].equals(userName)) {
                 users.remove(i);
