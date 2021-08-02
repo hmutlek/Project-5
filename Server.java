@@ -8,6 +8,16 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Server
+ *
+ * The server that take care of all inputs
+ *
+ * @author Hao Zhou
+ *
+ * @version July 30 2021
+ *
+ */
 public class Server {
     private Socket socket = null;
     public static String choice;
