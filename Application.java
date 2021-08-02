@@ -1,6 +1,15 @@
 import java.io.IOException;
 import java.util.Scanner;
-
+/**
+ * Account
+ *
+ * The basic work flow of the program, it resumes project 4 
+ *
+ * @author Hao Zhou
+ *
+ * @version July 30 2021
+ *
+ */
 public class Application {
     public static String choice;
     static Scanner scan = new Scanner(System.in);
