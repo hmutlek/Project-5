@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,8 @@ public class Server {
     private static int port;
     private static Object gateKeeper = new Object();
     private static ArrayList<Functions> functions = new ArrayList<>();
+    public static Server instance;
+    public static Boolean running = true;
 
 
     public Server(Socket socket) {
@@ -30,11 +33,17 @@ public class Server {
         return false;
     }
 
-    public static void main (String[] args) throws IOException {
+    public static Boolean stopServer(int choice) {
+        if (choice == 0) {
+            return false;
+        }
+        return true;
+    }
 
+    public static void main (String[] args) throws IOException {
         port = 4242;
         ServerSocket serverSocket = new ServerSocket(port);
-        while (true) {
+        while (running) {
             System.out.println("Waiting for the client to connect...");
             Socket socket = serverSocket.accept();
             System.out.println("Client connected!");
