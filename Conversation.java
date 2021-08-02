@@ -96,15 +96,10 @@ public class Conversation {
             CSVReadWrite messages = new CSVReadWrite("messages.csv");
             messages.readFile();
             for (String line : messages.getLines()) {
-                try {
-                    if (line.split(",")[5].equals(index)) {
-                        messagesString.append(String.format("%s: %s", line.split(",")[2], line.split(",")[3]));
-                        messagesString.append("\n");
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    continue;
+                if (line.split(",")[5].equals(index)) {
+                    messagesString.append(String.format("%s: %s", line.split(",")[2], line.split(",")[3]));
+                    messagesString.append("\n");
                 }
-
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
