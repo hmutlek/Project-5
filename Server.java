@@ -4,15 +4,23 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Server {
+    private Socket socket = null;
     public static String choice;
-    static Scanner scan = new Scanner(System.in);
-    public static String welcome() {
-        System.out.println("Welcome using this application please select options below" +
-            "\n1.Log in    2.Sign up     3.type exit to exit anytime");
-        return scan.nextLine();
+    private static int port;
+    private static Object gateKeeper = new Object();
+    private static ArrayList<Functions> functions = new ArrayList<>();
+
+
+    public Server(Socket socket) {
+        this.socket = socket;
+    }
+
+    public Server(int port) {
+        this.port = port;
     }
 
     public static boolean testIfExit() {
@@ -23,135 +31,162 @@ public class Server {
     }
 
     public static void main (String[] args) throws IOException {
-        String username;
-        String password;
-        int port;
-        choice = welcome();
-        Boolean ifContinue = true;
-        Account user = new Account();
 
-        ServerSocket serverSocket = new ServerSocket(4242);
-        System.out.println("Waiting for the client to connect...");
-        Socket socket = serverSocket.accept();
-        System.out.println("Client connected!");
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
-            //the following codes are used to test login and signup options
-            do {
-                try {
-                    switch (choice) {
-                        case "1" :
-                            user = new Account();
-                            System.out.println("Please enter your username:");
-                            username = scan.nextLine();
-                            System.out.println("Please enter your password:");
-                            password = scan.nextLine();
-                            if (user.logIn(username, password)) {
-                                System.out.println("Logged in");
-                                user.getIdentifier();
-                                ifContinue = false;
-                            } else {
-                                System.out.println("Log in failed, please check your username or password");
-                                choice = welcome();
-                            }
-                            break;
-
-
-
-                        case "2" :
-                            System.out.println("Please enter your username:");
-                            username = scan.nextLine();
-                            System.out.println("Please enter your password:");
-                            password = scan.nextLine();
-                            if (username.equals("deletedAccount")) {
-                                System.out.println("Sorry, it is a reserved word. Please use another username!");
-                                break;
-                            }
-                            user = new Account(username, password);
-                            if (user.signUp()) {
-                                System.out.println("Signed up");
-                                user.getIdentifier();
-                                ifContinue = false;
-                            } else {
-                                System.out.println("Sign up failed, the username is already in use");
-                                choice = welcome();
-                            }
-                            break;
-
-                        case "exit" :
-                            break;
-
-                        default :
-                            System.out.println("please enter a valid input");
-                            choice = welcome();
-                            break;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("oops, IOException occurred.");
-                }
-            } while (ifContinue && !choice.equals("exit"));
-
-            //the following do while loop test account modification
-            ifContinue = true;
-            Boolean ifDeleted = false;
-            do {
-                if (ifDeleted) {
-                    break;
-                }
-                System.out.println("What would you like to do?\n" +
-                    "1. change username     2. change password      3.delete account    4. go to conversations");
-                choice = scan.nextLine();
-                try {
-                    switch (choice) {
-                        case "1" :
-                            System.out.println("please enter a new username");
-                            String temp = scan.nextLine();
-                            if (user.changeUserName(temp)) {
-                                System.out.println("username changed successfully.");
-                            } else {
-                                System.out.println("username is already been used");
-                            }
-                            break;
-
-                        case "2" :
-                            System.out.println("please enter a new password");
-                            temp = scan.nextLine();
-                            if (user.changePassword(temp)) {
-                                System.out.println("password changed successfully.");
-                            } else {
-                                System.out.println("failed to change password");
-                            }
-                            break;
-
-                        case "3" :
-                            System.out.println("Are you sure you want to delete your account?(type yes to confirm)");
-                            temp = scan.nextLine();
-                            if (temp.equalsIgnoreCase("yes")) {
-                                user.deleteAccount();
-                                System.out.println("account deleted");
-                                ifDeleted = true;
-                            } else {
-                                System.out.println("going back...");
-                            }
-                            break;
-
-                        case "4":
-                            //method can only run if on a conversation object
-                            //so I make a conversation object that does not get added on to conversations.csv
-                            //the only thing it does is exist so runConversation can happen
-                            String[] tempStrings = new String[]{"me"};
-                            Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
-                            tempConvo.runConversation(user);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } while (ifContinue && !choice.equals("exit"));
+        port = 4242;
+        ServerSocket serverSocket = new ServerSocket(port);
+        while (true) {
+            System.out.println("Waiting for the client to connect...");
+            Socket socket = serverSocket.accept();
+            System.out.println("Client connected!");
+            Functions functionThread = new Functions(socket);
+            functionThread.start();
+            functions.add(functionThread);
         }
+    }
+}
+
+class Functions extends Thread {
+    private Socket socket;
+    String choice;
+    Boolean ifContinue = true;
+    Account user = new Account();
+    String username;
+    String password;
+    private BufferedReader reader;
+    private PrintWriter writer;
+
+    private Object gateKeeper = new Object();
+
+    public Functions(Socket socket) throws IOException {
+        this.socket = socket;
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    public void run() {
+        synchronized (gateKeeper) {
+            while (true) {
+                try {
+                    //the following codes are used to test login and signup options
+                    do {
+                        try {
+                            switch (choice) {
+                                case "1" :
+                                    user = new Account();
+                                    writer.write("Please enter your username:");
+                                    username = reader.readLine();
+                                    writer.write("Please enter your password:");
+                                    password = reader.readLine();
+                                    if (user.logIn(username, password)) {
+                                        writer.write("Logged in");
+                                        user.getIdentifier();
+                                        ifContinue = false;
+                                    } else {
+                                        writer.write("Log in failed, please check your username or password");
+                                        choice = reader.readLine();
+                                    }
+                                    break;
 
 
 
+                                case "2" :
+                                    System.out.println("Please enter your username:");
+                                    username = reader.readLine();
+                                    System.out.println("Please enter your password:");
+                                    password = reader.readLine();
+                                    if (username.equals("deletedAccount")) {
+                                        writer.write("Sorry, it is a reserved word. Please use another username!");
+                                        break;
+                                    }
+                                    user = new Account(username, password);
+                                    if (user.signUp()) {
+                                        writer.write("Signed up");
+                                        user.getIdentifier();
+                                        ifContinue = false;
+                                    } else {
+                                        writer.write("Sign up failed, the username is already in use");
+                                        System.out.println();
+                                        choice = reader.readLine();
+                                    }
+                                    break;
+
+                                case "exit" :
+                                    break;
+
+                                default :
+                                    writer.write("please enter a valid input");
+                                    choice = reader.readLine();
+                                    break;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println("oops, IOException occurred.");
+                        }
+                    } while (ifContinue && !choice.equals("exit"));
+
+                    //the following do while loop test account modification
+                    ifContinue = true;
+                    Boolean ifDeleted = false;
+                    do {
+                        if (ifDeleted) {
+                            break;
+                        }
+                        try {
+                            choice = reader.readLine();
+                            switch (choice) {
+                                case "1" :
+                                    writer.write("please enter a new username");
+                                    String temp = reader.readLine();
+                                    if (user.changeUserName(temp)) {
+                                        writer.write("username changed successfully.");
+                                    } else {
+                                        writer.write("username is already been used");
+                                    }
+                                    break;
+
+                                case "2" :
+                                    writer.write("please enter a new password");
+                                    temp = reader.readLine();
+                                    if (user.changePassword(temp)) {
+                                        writer.write("password changed successfully.");
+                                    } else {
+                                        writer.write("failed to change password");
+                                    }
+                                    break;
+
+                                case "3" :
+                                    System.out.println("Are you sure you want to delete your account?(type yes to confirm)");
+                                    temp = reader.readLine();
+                                    if (temp.equalsIgnoreCase("yes")) {
+                                        user.deleteAccount();
+                                        writer.write("account deleted");
+                                        ifDeleted = true;
+                                    } else {
+                                        writer.write("going back...");
+                                    }
+                                    break;
+
+                                case "4":
+                                    //method can only run if on a conversation object
+                                    //so I make a conversation object that does not get added on to conversations.csv
+                                    //the only thing it does is exist so runConversation can happen
+                                    String[] tempStrings = new String[]{"me"};
+                                    Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
+                                    tempConvo.runConversation(user);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } while (ifContinue && !choice.equals("exit"));
+                } finally {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    writer.close();
+                }
+            }
+        }
     }
 }
