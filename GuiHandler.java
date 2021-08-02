@@ -340,6 +340,7 @@ public class GuiHandler {
                 if (validName) {
                     if (JOptionPane.showConfirmDialog(null, "Would you like to add another user?", "Add More?"
                             , JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        enterUser.setText("");
                         //tells server it is going to do this again
                     } else {
                         //tells server to move on to next part
