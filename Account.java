@@ -1,6 +1,15 @@
 import java.io.IOException;
 import java.util.ArrayList;
-
+/**
+ * Account
+ *
+ * Account take cares of all account modification related functions
+ *
+ * @author Hao Zhou
+ *
+ * @version July 30 2021
+ *
+ */
 public class Account {
     private String userName;
     private String password;
