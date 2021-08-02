@@ -95,34 +95,32 @@ class Functions extends Thread {
                     //the following codes are used to test login and signup options
                     do {
                         try {
-                            choice = reader.readLine();
-                            writer.write("continue");
+                            writer.write("Welcome using this application please select options below" +
+                                    "   1.Log in    2.Sign up     3.type exit to exit anytime");
                             writer.println();
                             writer.flush();
+                            choice = reader.readLine();
                             switch (choice) {
                                 case "1" :
-                                    boolean isGood = false;
-                                    do {
                                     user = new Account();
-
+                                    writer.write("Please enter your username:");
+                                    writer.println();
+                                    writer.flush();
                                     username = reader.readLine();
+                                    writer.write("Please enter your password:");
+                                    writer.println();
+                                    writer.flush();
                                     password = reader.readLine();
-
-                                        if (user.logIn(username, password)) {
-                                            writer.write("true");
-                                            writer.println();
-                                            writer.flush();
-                                            user.getIdentifier();
-                                            ifContinue = false;
-                                            isGood = true;
-                                        } else {
-                                            writer.write("Log in failed, please check your username or password");
-                                            writer.println();
-                                            writer.flush();
-                                            System.out.println("BAD");
-                                            //choice = reader.readLine();
-                                        }
-                                    } while (!isGood);
+                                    if (user.logIn(username, password)) {
+                                        writer.write("Logged in");
+                                        writer.println();
+                                        writer.flush();
+                                        user.getIdentifier();
+                                        ifContinue = false;
+                                    } else {
+                                        writer.write("Log in failed, please check your username or password");
+                                        choice = reader.readLine();
+                                    }
                                     break;
 
 
@@ -165,9 +163,7 @@ class Functions extends Thread {
                             System.out.println("oops, IOException occurred.");
                         }
                     } while (ifContinue && !this.choice.equalsIgnoreCase("exit"));
-                    writer.write("continue");
-                    writer.println();
-                    writer.flush();
+
                     //the following do while loop test account modification
                     ifContinue = true;
                     Boolean ifDeleted = false;
@@ -176,29 +172,27 @@ class Functions extends Thread {
                             break;
                         }
                         try {
+                            writer.write("What would you like to do?\n" +
+                                    "1. change username     2. change password" +
+                                            "      3.delete account    4. go to conversations");
+                            writer.println();
+                            writer.flush();
                             choice = reader.readLine();
-                            String temp = "";
                             switch (choice) {
                                 case "1" :
-
-                                    writer.write("1");
+                                    writer.write("please enter a new username");
                                     writer.println();
                                     writer.flush();
-                                    boolean usernameCheck = false;
-                                    do {
-                                        temp = reader.readLine();
-                                        System.out.println(temp);
-                                        if (user.changeUserName(temp)) {
-                                            writer.write("worked");
-                                            writer.println();
-                                            writer.flush();
-                                            usernameCheck = true;
-                                        } else {
-                                            writer.write("username is already been used");
-                                            writer.println();
-                                            writer.flush();
-                                        }
-                                    } while (!usernameCheck);
+                                    String temp = reader.readLine();
+                                    if (user.changeUserName(temp)) {
+                                        writer.write("username changed successfully.");
+                                        writer.println();
+                                        writer.flush();
+                                    } else {
+                                        writer.write("username is already been used");
+                                        writer.println();
+                                        writer.flush();
+                                    }
                                     break;
 
                                 case "2" :
