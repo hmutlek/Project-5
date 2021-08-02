@@ -55,16 +55,22 @@ public class MessageServer {
         while (ifDeleted) {
             try {
                 switch (choice2) {
-                    // I don't think changing username/password should be sent to server
-                    // If only the result is sent to the server, it can be saved then.
                     case 1:
                         String temp = reader.readLine();
-                        user.changeUserName(temp);
+                        if (user.changeUserName(temp)) {
+                            writer.write("Success");
+                        } else {
+                            writer.write("Fail");
+                        }
                         //change Username;
                         break;
                     case 2:
                         temp = reader.readLine();
-                        user.changePassword(temp);
+                        if (user.changePassword(temp)) {
+                            writer.write("Success");
+                        } else {
+                            writer.write("Fail");
+                        }
                         // change Password
                         break;
                     case 3:
@@ -77,6 +83,7 @@ public class MessageServer {
                         Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
                         tempConvo.runConversation(user);
                         //start Conversation
+                        //not sure
                         break;
                     }
             } catch (IOException e) {
