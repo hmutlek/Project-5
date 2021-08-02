@@ -1,9 +1,9 @@
 import java.io.IOException;
 import java.util.Scanner;
 /**
- * Account
+ * Application
  *
- * The basic work flow of the program, it resumes project 4 
+ * The basic work flow of the program, it resumes project 4
  *
  * @author Hao Zhou
  *
