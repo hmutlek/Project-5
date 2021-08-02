@@ -40,23 +40,29 @@ public class Server {
         return true;
     }
 
-    public static void main (String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         port = 4242;
         ServerSocket serverSocket = new ServerSocket(port);
         while (running) {
-            System.out.println("Waiting for the client to connect...");
-            Socket socket = serverSocket.accept();
-            System.out.println("Client connected!");
-            Functions functionThread = new Functions(socket);
-            functionThread.start();
-            functions.add(functionThread);
+            Socket socket = null;
+            try {
+                System.out.println("Waiting for the client to connect...");
+                socket = serverSocket.accept();
+                System.out.println("Client connected!");
+                Functions functionThread = new Functions(socket);
+                functionThread.start();
+                functions.add(functionThread);
+            } catch (Exception ie) {
+                socket.close();
+                ie.printStackTrace();
+            }
         }
     }
 }
 
 class Functions extends Thread {
     private Socket socket;
-    String choice;
+    String choice = "0";
     Boolean ifContinue = true;
     Account user = new Account();
     String username;
@@ -79,15 +85,26 @@ class Functions extends Thread {
                     //the following codes are used to test login and signup options
                     do {
                         try {
+                            writer.write("Welcome using this application please select options below" +
+                                    "   1.Log in    2.Sign up     3.type exit to exit anytime");
+                            writer.println();
+                            writer.flush();
+                            choice = reader.readLine();
                             switch (choice) {
                                 case "1" :
                                     user = new Account();
                                     writer.write("Please enter your username:");
+                                    writer.println();
+                                    writer.flush();
                                     username = reader.readLine();
                                     writer.write("Please enter your password:");
+                                    writer.println();
+                                    writer.flush();
                                     password = reader.readLine();
                                     if (user.logIn(username, password)) {
                                         writer.write("Logged in");
+                                        writer.println();
+                                        writer.flush();
                                         user.getIdentifier();
                                         ifContinue = false;
                                     } else {
@@ -110,6 +127,8 @@ class Functions extends Thread {
                                     user = new Account(username, password);
                                     if (user.signUp()) {
                                         writer.write("Signed up");
+                                        writer.println();
+                                        writer.flush();
                                         user.getIdentifier();
                                         ifContinue = false;
                                     } else {
@@ -124,6 +143,8 @@ class Functions extends Thread {
 
                                 default :
                                     writer.write("please enter a valid input");
+                                    writer.println();
+                                    writer.flush();
                                     choice = reader.readLine();
                                     break;
                             }
@@ -131,7 +152,7 @@ class Functions extends Thread {
                             e.printStackTrace();
                             System.out.println("oops, IOException occurred.");
                         }
-                    } while (ifContinue && !choice.equals("exit"));
+                    } while (ifContinue && !this.choice.equalsIgnoreCase("exit"));
 
                     //the following do while loop test account modification
                     ifContinue = true;
@@ -141,25 +162,42 @@ class Functions extends Thread {
                             break;
                         }
                         try {
+                            writer.write("What would you like to do?\n" +
+                                    "1. change username     2. change password" +
+                                            "      3.delete account    4. go to conversations");
+                            writer.println();
+                            writer.flush();
                             choice = reader.readLine();
                             switch (choice) {
                                 case "1" :
                                     writer.write("please enter a new username");
+                                    writer.println();
+                                    writer.flush();
                                     String temp = reader.readLine();
                                     if (user.changeUserName(temp)) {
                                         writer.write("username changed successfully.");
+                                        writer.println();
+                                        writer.flush();
                                     } else {
                                         writer.write("username is already been used");
+                                        writer.println();
+                                        writer.flush();
                                     }
                                     break;
 
                                 case "2" :
                                     writer.write("please enter a new password");
+                                    writer.println();
+                                    writer.flush();
                                     temp = reader.readLine();
                                     if (user.changePassword(temp)) {
                                         writer.write("password changed successfully.");
+                                        writer.println();
+                                        writer.flush();
                                     } else {
                                         writer.write("failed to change password");
+                                        writer.println();
+                                        writer.flush();
                                     }
                                     break;
 
@@ -169,9 +207,13 @@ class Functions extends Thread {
                                     if (temp.equalsIgnoreCase("yes")) {
                                         user.deleteAccount();
                                         writer.write("account deleted");
+                                        writer.println();
+                                        writer.flush();
                                         ifDeleted = true;
                                     } else {
                                         writer.write("going back...");
+                                        writer.println();
+                                        writer.flush();
                                     }
                                     break;
 
@@ -186,7 +228,7 @@ class Functions extends Thread {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    } while (ifContinue && !choice.equals("exit"));
+                    } while (ifContinue && !choice.equalsIgnoreCase("exit"));
                 } finally {
                     try {
                         reader.close();
