@@ -39,6 +39,9 @@ public class Account {
         }
         return this.identifier;
     }
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
 
     public String getUserName() {
@@ -130,6 +133,9 @@ public class Account {
         return true;
     }
 
+    public String returnIdentifier() {
+        return this.identifier;
+    }
     public Boolean changePassword(String password) throws IOException {
         if (!checkIfExist(userName, 1)) {
             return false;

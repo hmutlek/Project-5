@@ -90,7 +90,7 @@ public class Conversation {
     }
 
     //gets all messages for a conversation, taking an index as input
-    public StringBuilder getMessages(String index) {
+    public String getMessages(String index) {
         StringBuilder messagesString = new StringBuilder();
         try {
             CSVReadWrite messages = new CSVReadWrite("messages.csv");
@@ -98,17 +98,17 @@ public class Conversation {
             for (String line : messages.getLines()) {
                 if (line.split(",")[5].equals(index)) {
                     messagesString.append(String.format("%s: %s", line.split(",")[2], line.split(",")[3]));
-                    messagesString.append("\n");
+                    messagesString.append("~");
                 }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return messagesString;
+        return messagesString.toString();
 
     }
     //gets all messages for a conversation but this one is just conversation.getMessages() with no input
-    public StringBuilder getMessages() {
+    public String getMessages() {
         StringBuilder messagesString = new StringBuilder();
         try {
             CSVReadWrite messages = new CSVReadWrite("messages.csv");
@@ -122,7 +122,7 @@ public class Conversation {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return messagesString;
+        return messagesString.toString();
 
     }
 
@@ -136,17 +136,22 @@ public class Conversation {
         int counter = 1;
         String[] conversationArray = new String[conversationIndex.size()];
         conversationArray = conversationIndex.toArray(conversationArray);
+        StringBuilder toReturn = new StringBuilder();
+        for (String index : conversationArray) {
 
-        for (String index : conversationIndex) {
             for (String line : conversations.getLines()) {
                 if (line.split(",")[0].equals(index)) {
-                    System.out.printf("%d: %s%n", counter, line.split(",")[2]);
+                    toReturn.append(String.format("%d: %s~", counter, line.split(",")[2]));
                     counter++;
                 }
             }
             //print conversation name if it works
         }
-
+        toReturn.append(",");
+        toReturn.append(counter);
+        System.out.println(toReturn);
+        return toReturn.toString();
+        /*
         System.out.println("input a number of which conversation you want to view");
         //take input from user of which one they want to select
         //0 is quit
@@ -167,6 +172,7 @@ public class Conversation {
             //returns the index of the selected array
             return conversationArray[choice - 1];
         }
+         */
     }
 
     //makes a new conversation by taking inputs of who to add

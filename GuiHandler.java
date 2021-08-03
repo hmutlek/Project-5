@@ -3,6 +3,11 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class GuiHandler {
 //fields go here
@@ -18,20 +23,25 @@ public class GuiHandler {
     }
 
 
-    public void welcome(Container content, JFrame frame) {
+    public void welcome(Container content, JFrame frame, Socket socket, PrintWriter writer) {
 
         //welcome buttons
         WelcomeOne = new JButton("Log in");
         WelcomeOne.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server 1 was picked
+                    writer.write("1");
+                    writer.println();
+                    writer.flush();
+
             }
         });
 
         WelcomeTwo = new JButton("Sign up");
         WelcomeTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server that 2 was selected
+                writer.write("2");
+                writer.println();
+                writer.flush();
             }
         });
         JLabel WelcomeText = new JLabel("Please select an option", SwingConstants.CENTER);
@@ -46,47 +56,60 @@ public class GuiHandler {
 
     }
 
-    public void getLogin(Container content, JFrame frame) {
+    public void getLogin(Container content, JFrame frame, Socket socket, PrintWriter writer,  BufferedReader reader) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
+
 
         final String[] username = {""};
         final String[] password = {""};
         JTextField passwordField = new JTextField(20);
 
+        JTextField userNameField = new JTextField(20);
+        JLabel userText = new JLabel("Please enter a username", SwingConstants.CENTER);
+        userText.setHorizontalAlignment(JLabel.CENTER);
         JButton enterPass = new JButton("Enter");
-        enterPass.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("TEST");
-                password[0] = passwordField.getText();
-                //send server username and password
-                Boolean validUsername = false;
-                if (validUsername) {
-
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid username / password.\n" +
-                            "Please a different username / password");
-                }
-                //move onto next thing
-            }
-        });
+        JButton enterUser = new JButton("Enter");
 
         JLabel passText = new JLabel("Please enter a password", SwingConstants.CENTER);
         passText.setHorizontalAlignment(JLabel.CENTER);
         JPanel south2 = new JPanel();
         south2.add(enterPass);
         south2.add(passwordField);
-        frame.add(passText);
-        content.add(south2, BorderLayout.SOUTH);
+        JPanel south1 = new JPanel();
+        south1.add(enterUser);
+        south1.add(userNameField);
+        frame.add(userText);
+        content.add(south1, BorderLayout.SOUTH);
+        frame.validate();
 
-        JButton enterUser = new JButton("Enter");
 
-        JTextField userNameField = new JTextField(20);
-        JLabel userText = new JLabel("Please enter a username", SwingConstants.CENTER);
-        userText.setHorizontalAlignment(JLabel.CENTER);
+
+        enterPass.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                password[0] = passwordField.getText();
+                //send server username and password
+                writer.write(password[0]);
+                writer.println();
+                writer.flush();
+
+                //move onto next thing
+            }
+        });
+
+
 
         enterUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //get text if blank give jPanel window that says error
                 username[0] = userNameField.getText();
+
+                writer.write(username[0]);
+                writer.println();
+                writer.flush();
+
                 frame.getContentPane().removeAll();
                 frame.revalidate();
                 frame.repaint();
@@ -96,14 +119,14 @@ public class GuiHandler {
                 //clear jFrame and put the new stuff there
             }
         });
-        JPanel south1 = new JPanel();
-        south1.add(enterUser);
-        south1.add(userNameField);
-        frame.add(userText);
-        content.add(south1, BorderLayout.SOUTH);
+
     }
 
-    public void accountChoice(Container content, JFrame frame) {
+    public void accountChoice(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         //three buttons and the text
         JButton changeUser = new JButton("Change Username");
         JButton changePass = new JButton("Change Password");
@@ -114,22 +137,30 @@ public class GuiHandler {
 
         changeUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("1");
+                writer.println();
+                writer.flush();
             }
         });
         changePass.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("2");
+                writer.println();
+                writer.flush();
             }
         });
         deleteUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("3");
+                writer.println();
+                writer.flush();
             }
         });
         goToConvo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("4");
+                writer.println();
+                writer.flush();
             }
         });
         JPanel south = new JPanel();
@@ -139,9 +170,14 @@ public class GuiHandler {
         south.add(goToConvo);
         frame.add(choiceText);
         content.add(south, BorderLayout.SOUTH);
+        frame.validate();
     }
 
-    public void changeUsername(Container content, JFrame frame) {
+    public void changeUsername(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JLabel centerText = new JLabel("Please enter new username", SwingConstants.CENTER);
         centerText.setHorizontalAlignment(JLabel.CENTER);
         JTextField newUser = new JTextField(20);
@@ -149,9 +185,10 @@ public class GuiHandler {
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newUsername = newUser.getText();
-                if (newUsername.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Invalid username", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                writer.write(newUsername);
+                writer.println();
+                writer.flush();
+
             }
         });
 
@@ -160,19 +197,24 @@ public class GuiHandler {
         south.add(newUser);
         content.add(south, BorderLayout.SOUTH);
         frame.add(centerText);
+        frame.validate();
     }
 
-    public void changePassword(Container content, JFrame frame) {
+    public void changePassword(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JLabel centerText = new JLabel("Please enter new password", SwingConstants.CENTER);
         centerText.setHorizontalAlignment(JLabel.CENTER);
         JTextField newPass = new JTextField(20);
         JButton enter = new JButton("Enter");
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String newUsername = newPass.getText();
-                if (newUsername.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Invalid password", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                String password = newPass.getText();
+                writer.write(password);
+                writer.println();
+                writer.flush();
             }
         });
 
@@ -181,9 +223,14 @@ public class GuiHandler {
         south.add(newPass);
         content.add(south, BorderLayout.SOUTH);
         frame.add(centerText);
+        frame.validate();
     }
 
-    public void deleteAccount(Container content, JFrame frame) {
+    public void deleteAccount(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JButton delete = new JButton("DELETE");
         //delete.setSize(new Dimension(10,10));
         JButton yes = new JButton("Yes");
@@ -205,8 +252,10 @@ public class GuiHandler {
 
         delete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server to delete
-                JOptionPane.showMessageDialog(null, "Account has been deleted", "It Gone", JOptionPane.WARNING_MESSAGE);
+                writer.write("yes");
+                writer.println();
+                writer.flush();
+
             }
         });
 
@@ -214,11 +263,15 @@ public class GuiHandler {
         south.add(no);
         content.add(south, BorderLayout.SOUTH);
         frame.add(centerText);
-
+        frame.validate();
 
     }
 
-    public void showConversations(Container content, JFrame frame, String conversations, int size) {
+    public void showConversations(Container content, JFrame frame, String conversations, int size, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JButton enter = new JButton("Enter");
         JTextArea conversationSelect = new JTextArea("Enter the conversation you want to view\n" + conversations);
         conversationSelect.setEditable(false);
@@ -232,6 +285,7 @@ public class GuiHandler {
         content.add(south, BorderLayout.SOUTH);
 
         frame.add(conversationSelect);
+        frame.validate();
 
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -246,12 +300,20 @@ public class GuiHandler {
                     JOptionPane.showMessageDialog(null, "Please enter a valid number",
                             "You Goofed", JOptionPane.ERROR_MESSAGE);
                 }
+                writer.write(String.valueOf(select));
+                writer.println();
+                writer.flush();
+
                 //send select to server and move to next part
             }
         });
     }
 
-    public void showMessages(Container content, JFrame frame, String conversations) {
+    public void showMessages(Container content, JFrame frame, String conversations, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JButton quit = new JButton("Go back to account");
         JButton viewConvo = new JButton("View conversations");
         JButton sendMessage = new JButton("Send Message");
@@ -267,6 +329,7 @@ public class GuiHandler {
         south.add(sendMessage);
         south.add(newConvo);
         south.add(quit);
+        frame.validate();
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -296,7 +359,11 @@ public class GuiHandler {
 
     }
 
-    public void sendMessage(Container content, JFrame frame) {
+    public void sendMessage(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JButton enter = new JButton("Enter");
         JTextField message = new JTextField(55);
         JLabel centerMessage = new JLabel("Enter message to send");
@@ -316,10 +383,15 @@ public class GuiHandler {
         south.add(message);
         frame.add(centerMessage);
         content.add(south, BorderLayout.SOUTH);
+        frame.validate();
 
     }
 
-    public void startConvo(Container content, JFrame frame) {
+    public void startConvo(Container content, JFrame frame, Socket socket, PrintWriter writer) {
+
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
         JButton add = new JButton("Add");
         JTextField enterUser = new JTextField(30);
         JLabel centerText = new JLabel("Enter username to add");
@@ -330,6 +402,7 @@ public class GuiHandler {
         south.add(enterUser);
         content.add(south, BorderLayout.SOUTH);
         frame.add(centerText);
+        frame.validate();
 
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -381,7 +454,7 @@ public class GuiHandler {
             //case 3 delete
             //case 4 go to conversations
                 //some logic to see if there are any conversation if none then it will prompt to start one
-            run.startConvo(content, frame);
+            //run.getLogin(content, frame);
         // wait for server to make sure it gets the right input"test\n\n\n\n\n\n\n\n\n\n\n\n\ndoes it go down"
 
         //what do now?
