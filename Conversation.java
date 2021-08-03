@@ -78,9 +78,13 @@ public class Conversation {
             e.printStackTrace();
         }
         for (String line : conversations.getLines()) {
-            if (line.split(",")[0].equals(index)) {
-                tempLine = line;
-                break;
+            try {
+                if (line.split(",")[0].equals(index)) {
+                    tempLine = line;
+                    break;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                continue;
             }
         }
         String[] lineSplit = tempLine.split(",");
@@ -158,14 +162,12 @@ public class Conversation {
         Scanner scan = new Scanner(System.in);
         int choice;
         choice = Integer.parseInt(scan.nextLine());
-
         if (choice < 0 || choice > counter) {
             do {
                 System.out.printf("Please enter a number between 0 and %d%n", counter);
                 choice = scan.nextInt();
             } while (choice < 0 || choice > counter);
         }
-
         if (choice == 0) {
             return "QUIT";
         } else {
@@ -320,31 +322,30 @@ public class Conversation {
                 case(4):
                     //makes new conversation using method made earlier
                     newConversation(user);
-                }
+            }
         } while (choice != 3);
     }
 
     public static void main(String[] args) {
         /**
-        //The members of this is stored as a String array for now until something better is figured out
-        String[] testArray = new String[]{"paularoni", "paul"};
-        //initializing a conversation that already exists on the csv
-        Conversation newTest = new Conversation(testArray, "2", "paularoni & paul");
-        //sending a new message updates the messages in messages.csv
-        newTest.sendMessage("check the csv file before you run this and this message should not be there", "2");
-        //shows all messages in a conversation
-        System.out.println(newTest.getMessages());
-
-        //making a new conversation
-        String[] arrayTwo = new String[]{"ricky", "bubbles"};
-        //this conversation does not exist in the csv file currently
-        Conversation testTwo = new Conversation(arrayTwo);
-        //these messages do not exist in the csv file yet check to see that
-        testTwo.sendMessage("This message does not exist until it is ran", "bubbles");
-        testTwo.sendMessage("I do not understand what that means", "ricky");
-        //displaying the messages in this conversation
-        System.out.println(testTwo.getMessages());
-        */
+         //The members of this is stored as a String array for now until something better is figured out
+         String[] testArray = new String[]{"paularoni", "paul"};
+         //initializing a conversation that already exists on the csv
+         Conversation newTest = new Conversation(testArray, "2", "paularoni & paul");
+         //sending a new message updates the messages in messages.csv
+         newTest.sendMessage("check the csv file before you run this and this message should not be there", "2");
+         //shows all messages in a conversation
+         System.out.println(newTest.getMessages());
+         //making a new conversation
+         String[] arrayTwo = new String[]{"ricky", "bubbles"};
+         //this conversation does not exist in the csv file currently
+         Conversation testTwo = new Conversation(arrayTwo);
+         //these messages do not exist in the csv file yet check to see that
+         testTwo.sendMessage("This message does not exist until it is ran", "bubbles");
+         testTwo.sendMessage("I do not understand what that means", "ricky");
+         //displaying the messages in this conversation
+         System.out.println(testTwo.getMessages());
+         */
         String[] tempStrings = new String[]{"one", "two"};
         Conversation test = new Conversation(tempStrings, "0", "test");
         Account paul = new Account("paularoni", "poop", "3");
