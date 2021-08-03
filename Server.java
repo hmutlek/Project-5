@@ -254,6 +254,7 @@ class Functions extends Thread {
                                     //set the identifier of the user if it was not already in the user object
                                     user.setIdentifier(user.getIdentifier());
                                     //gets an ArrayList of all the conversations that the user's index is in
+                                    /**NEEDS LOGIC HERE TO GO START A CONVERSATINO  IF INDEX LENGTH IS 0*/
                                     ArrayList<String> indexes = tempConvo.inConversations(user);
                                     //gets a string of the names of the conversations to send to the client
                                     String toSend = tempConvo.getConversations(indexes);
