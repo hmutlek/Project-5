@@ -19,22 +19,21 @@ import java.util.Scanner;
  *
  */
 
-public class Client extends Thread {
+public class Client implements Runnable {
     String usernameInput = "Please enter your username:";
     String passwordInput = "Please enter your password:";
     String loggedIn = "Logged in";
     String loggedFailed = "Log in failed, please check your username or password";
     String reserved = "Sorry, it is a reserved word. Please use another username!";
     String signedUp = "Signed up";
+    Scanner scanner;
+    Socket socket;
+    BufferedReader reader;
+    PrintWriter writer;
+    String read;
 
     public void run() {
         try {
-            Scanner scanner = new Scanner(System.in);
-            Socket socket = new Socket("localhost", 1212);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-            String read = null;
-
             //starting the gui
             JFrame frame = new JFrame();
             //if we get a better name for this change name here
@@ -172,14 +171,13 @@ public class Client extends Thread {
 
     }
 
-    public static void main(String[] args) throws IOException {
-        Client toRun = new Client();
-        toRun.start();
-
-        try {
-            toRun.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public Client() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        Socket socket = new Socket("localhost", 1212);
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(socket.getOutputStream());
+        String read = null;
+        Thread t = new Thread(this);
+        t.start();
     }
 }
