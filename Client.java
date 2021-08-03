@@ -97,7 +97,6 @@ public class Client implements Runnable {
                                 if (result.equals("account deleted")) {
                                     JOptionPane.showMessageDialog(null, "Account has been deleted", "It Gone", JOptionPane.WARNING_MESSAGE);
                                 }
-                                doesWork = "";
                                 break;
 
                             case "4":
