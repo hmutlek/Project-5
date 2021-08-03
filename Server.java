@@ -104,8 +104,8 @@ class Functions extends Thread {
                                     do {
 
 
-                                    username = reader.readLine();
-                                    password = reader.readLine();
+                                        username = reader.readLine();
+                                        password = reader.readLine();
 
                                         if (user.logIn(username, password)) {
                                             writer.write("true");
