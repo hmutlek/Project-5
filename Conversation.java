@@ -96,10 +96,15 @@ public class Conversation {
             CSVReadWrite messages = new CSVReadWrite("messages.csv");
             messages.readFile();
             for (String line : messages.getLines()) {
-                if (line.split(",")[5].equals(index)) {
-                    messagesString.append(String.format("%s: %s", line.split(",")[2], line.split(",")[3]));
-                    messagesString.append("~");
+                try {
+                    if (line.split(",")[5].equals(index)) {
+                        messagesString.append(String.format("%s: %s", line.split(",")[2], line.split(",")[3]));
+                        messagesString.append("~");
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    continue;
                 }
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -320,31 +325,31 @@ public class Conversation {
                 case(4):
                     //makes new conversation using method made earlier
                     newConversation(user);
-                }
+            }
         } while (choice != 3);
     }
 
     public static void main(String[] args) {
         /**
-        //The members of this is stored as a String array for now until something better is figured out
-        String[] testArray = new String[]{"paularoni", "paul"};
-        //initializing a conversation that already exists on the csv
-        Conversation newTest = new Conversation(testArray, "2", "paularoni & paul");
-        //sending a new message updates the messages in messages.csv
-        newTest.sendMessage("check the csv file before you run this and this message should not be there", "2");
-        //shows all messages in a conversation
-        System.out.println(newTest.getMessages());
+         //The members of this is stored as a String array for now until something better is figured out
+         String[] testArray = new String[]{"paularoni", "paul"};
+         //initializing a conversation that already exists on the csv
+         Conversation newTest = new Conversation(testArray, "2", "paularoni & paul");
+         //sending a new message updates the messages in messages.csv
+         newTest.sendMessage("check the csv file before you run this and this message should not be there", "2");
+         //shows all messages in a conversation
+         System.out.println(newTest.getMessages());
 
-        //making a new conversation
-        String[] arrayTwo = new String[]{"ricky", "bubbles"};
-        //this conversation does not exist in the csv file currently
-        Conversation testTwo = new Conversation(arrayTwo);
-        //these messages do not exist in the csv file yet check to see that
-        testTwo.sendMessage("This message does not exist until it is ran", "bubbles");
-        testTwo.sendMessage("I do not understand what that means", "ricky");
-        //displaying the messages in this conversation
-        System.out.println(testTwo.getMessages());
-        */
+         //making a new conversation
+         String[] arrayTwo = new String[]{"ricky", "bubbles"};
+         //this conversation does not exist in the csv file currently
+         Conversation testTwo = new Conversation(arrayTwo);
+         //these messages do not exist in the csv file yet check to see that
+         testTwo.sendMessage("This message does not exist until it is ran", "bubbles");
+         testTwo.sendMessage("I do not understand what that means", "ricky");
+         //displaying the messages in this conversation
+         System.out.println(testTwo.getMessages());
+         */
         String[] tempStrings = new String[]{"one", "two"};
         Conversation test = new Conversation(tempStrings, "0", "test");
         Account paul = new Account("paularoni", "poop", "3");
