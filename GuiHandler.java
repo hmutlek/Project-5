@@ -9,6 +9,17 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * GUIHandler
+ *
+ * Handles GUI
+ *
+ * @author Group 03
+ *
+ * @version July 30 2021
+ *
+ */
+
 public class GuiHandler {
 //fields go here
     static boolean canContinue = false;
@@ -384,7 +395,6 @@ public class GuiHandler {
                 writer.flush();
             }
         });
-
         JPanel south = new JPanel();
         south.add(enter);
         south.add(message);
@@ -414,6 +424,9 @@ public class GuiHandler {
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String userToAdd = enterUser.getText();
+                writer.write(userToAdd);
+                writer.println();
+                writer.flush();
                 //send to server
                 //boolean exist for testing purposes will be replaced by server output
                 boolean validName = false;

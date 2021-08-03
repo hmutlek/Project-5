@@ -126,27 +126,32 @@ class Functions extends Thread {
 
 
                                 case "2" :
-                                    username = reader.readLine();
-                                    password = reader.readLine();
-                                    if (username.equals("deletedAccount")) {
-                                        writer.write("Sorry, it is a reserved word. Please use another username!");
-                                        writer.println();
-                                        writer.flush();
-                                        break;
-                                    }
-                                    user = new Account(username, password);
-                                    if (user.signUp()) {
-                                        writer.write("true");
-                                        writer.println();
-                                        writer.flush();
-                                        user.setIdentifier(user.getIdentifier());
-                                        ifContinue = false;
-                                    } else {
-                                        writer.write("Sign up failed, the username is already in use");
-                                        writer.println();
-                                        writer.flush();
-                                        choice = reader.readLine();
-                                    }
+                                    boolean isGood2 = false;
+                                    do {
+                                        username = reader.readLine();
+                                        password = reader.readLine();
+                                        if (username.equals("deletedAccount")) {
+                                            writer.write("Sorry, it is a reserved word. Please use another username!");
+                                            writer.println();
+                                            writer.flush();
+
+                                        }
+                                        user = new Account(username, password);
+                                        if (user.signUp()) {
+                                            writer.write("true");
+                                            writer.println();
+                                            writer.flush();
+                                            user.setIdentifier(user.getIdentifier());
+                                            ifContinue = false;
+                                            isGood2 = true;
+                                        } else {
+                                            writer.write("Sign up failed, the username is already in use");
+                                            writer.println();
+                                            writer.flush();
+                                            //choice = reader.readLine();
+
+                                        }
+                                    } while (!isGood2);
                                     break;
 
                                 case "exit" :

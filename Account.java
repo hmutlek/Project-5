@@ -5,7 +5,7 @@ import java.util.ArrayList;
  *
  * Account take cares of all account modification related functions
  *
- * @author Hao Zhou
+ * @author Group 03
  *
  * @version July 30 2021
  *

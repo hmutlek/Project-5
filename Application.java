@@ -5,7 +5,7 @@ import java.util.Scanner;
  *
  * The basic work flow of the program, it resumes project 4
  *
- * @author Hao Zhou
+ * @author Group 03
  *
  * @version July 30 2021
  *
