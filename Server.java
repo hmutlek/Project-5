@@ -1,8 +1,5 @@
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ import java.util.Scanner;
  *
  * The server that take care of all inputs
  *
- * @author Hao Zhou
+ * @author Group 03
  *
  * @version July 30 2021
  *
@@ -51,7 +48,7 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException {
-        port = 4242;
+        port = 1212;
         ServerSocket serverSocket = new ServerSocket(port);
         while (running) {
             Socket socket = null;
@@ -90,60 +87,64 @@ class Functions extends Thread {
 
     public void run() {
         synchronized (gateKeeper) {
+
             while (true) {
                 try {
+                    user = new Account();
                     //the following codes are used to test login and signup options
                     do {
                         try {
-                            writer.write("Welcome using this application please select options below" +
-                                    "   1.Log in    2.Sign up     3.type exit to exit anytime");
+                            choice = reader.readLine();
+                            writer.write("continue");
                             writer.println();
                             writer.flush();
-                            choice = reader.readLine();
                             switch (choice) {
                                 case "1" :
-                                    user = new Account();
-                                    writer.write("Please enter your username:");
-                                    writer.println();
-                                    writer.flush();
+                                    boolean isGood = false;
+                                    do {
+
+
                                     username = reader.readLine();
-                                    writer.write("Please enter your password:");
-                                    writer.println();
-                                    writer.flush();
                                     password = reader.readLine();
-                                    if (user.logIn(username, password)) {
-                                        writer.write("Logged in");
-                                        writer.println();
-                                        writer.flush();
-                                        user.getIdentifier();
-                                        ifContinue = false;
-                                    } else {
-                                        writer.write("Log in failed, please check your username or password");
-                                        choice = reader.readLine();
-                                    }
+
+                                        if (user.logIn(username, password)) {
+                                            writer.write("true");
+                                            writer.println();
+                                            writer.flush();
+                                            ifContinue = false;
+                                            isGood = true;
+                                        } else {
+                                            writer.write("Log in failed, please check your username or password");
+                                            writer.println();
+                                            writer.flush();
+                                            System.out.println("BAD");
+                                            //choice = reader.readLine();
+                                        }
+                                    } while (!isGood);
                                     break;
 
 
 
                                 case "2" :
-                                    System.out.println("Please enter your username:");
                                     username = reader.readLine();
-                                    System.out.println("Please enter your password:");
                                     password = reader.readLine();
                                     if (username.equals("deletedAccount")) {
                                         writer.write("Sorry, it is a reserved word. Please use another username!");
+                                        writer.println();
+                                        writer.flush();
                                         break;
                                     }
                                     user = new Account(username, password);
                                     if (user.signUp()) {
-                                        writer.write("Signed up");
+                                        writer.write("true");
                                         writer.println();
                                         writer.flush();
-                                        user.getIdentifier();
+                                        user.setIdentifier(user.getIdentifier());
                                         ifContinue = false;
                                     } else {
                                         writer.write("Sign up failed, the username is already in use");
-                                        System.out.println();
+                                        writer.println();
+                                        writer.flush();
                                         choice = reader.readLine();
                                     }
                                     break;
@@ -163,7 +164,9 @@ class Functions extends Thread {
                             System.out.println("oops, IOException occurred.");
                         }
                     } while (ifContinue && !this.choice.equalsIgnoreCase("exit"));
-
+                    writer.write("continue");
+                    writer.println();
+                    writer.flush();
                     //the following do while loop test account modification
                     ifContinue = true;
                     Boolean ifDeleted = false;
@@ -172,48 +175,58 @@ class Functions extends Thread {
                             break;
                         }
                         try {
-                            writer.write("What would you like to do?\n" +
-                                    "1. change username     2. change password" +
-                                            "      3.delete account    4. go to conversations");
-                            writer.println();
-                            writer.flush();
                             choice = reader.readLine();
+                            String temp = "";
                             switch (choice) {
                                 case "1" :
-                                    writer.write("please enter a new username");
+
+                                    writer.write("1");
                                     writer.println();
                                     writer.flush();
-                                    String temp = reader.readLine();
-                                    if (user.changeUserName(temp)) {
-                                        writer.write("username changed successfully.");
-                                        writer.println();
-                                        writer.flush();
-                                    } else {
-                                        writer.write("username is already been used");
-                                        writer.println();
-                                        writer.flush();
-                                    }
+                                    boolean usernameCheck = false;
+                                    do {
+                                        temp = reader.readLine();
+                                        System.out.println(temp);
+                                        if (user.changeUserName(temp)) {
+                                            writer.write("worked");
+                                            writer.println();
+                                            writer.flush();
+                                            usernameCheck = true;
+                                        } else {
+                                            writer.write("username is already been used");
+                                            writer.println();
+                                            writer.flush();
+                                        }
+                                    } while (!usernameCheck);
                                     break;
 
                                 case "2" :
-                                    writer.write("please enter a new password");
+                                    writer.write("2");
                                     writer.println();
                                     writer.flush();
-                                    temp = reader.readLine();
-                                    if (user.changePassword(temp)) {
-                                        writer.write("password changed successfully.");
-                                        writer.println();
-                                        writer.flush();
-                                    } else {
-                                        writer.write("failed to change password");
-                                        writer.println();
-                                        writer.flush();
-                                    }
+
+                                    boolean passwordCheck = false;
+                                    do {
+                                        temp = reader.readLine();
+                                        if (user.changePassword(temp)) {
+                                            writer.write("worked");
+                                            writer.println();
+                                            writer.flush();
+                                            passwordCheck = true;
+                                        } else {
+                                            writer.write("failed to change password");
+                                            writer.println();
+                                            writer.flush();
+                                        }
+                                    } while (!passwordCheck);
                                     break;
 
                                 case "3" :
-                                    System.out.println("Are you sure you want to delete your account?(type yes to confirm)");
+                                    writer.write("3");
+                                    writer.println();
+                                    writer.flush();
                                     temp = reader.readLine();
+                                    //if the user clicks all the needed button to delete client sends server "yes"
                                     if (temp.equalsIgnoreCase("yes")) {
                                         user.deleteAccount();
                                         writer.write("account deleted");
@@ -228,17 +241,130 @@ class Functions extends Thread {
                                     break;
 
                                 case "4":
+                                    writer.write("4");
+                                    writer.println();
+                                    writer.flush();
                                     //method can only run if on a conversation object
                                     //so I make a conversation object that does not get added on to conversations.csv
                                     //the only thing it does is exist so runConversation can happen
                                     String[] tempStrings = new String[]{"me"};
                                     Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
-                                    tempConvo.runConversation(user);
+                                    //set the identifier of the user if it was not already in the user object
+                                    user.setIdentifier(user.getIdentifier());
+                                    //gets an ArrayList of all the conversations that the user's index is in
+                                    /**NEEDS LOGIC HERE TO GO START A CONVERSATION  IF INDEX LENGTH IS 0*/
+                                    ArrayList<String> indexes = tempConvo.inConversations(user);
+                                    //gets a string of the names of the conversations to send to the client
+                                    String toSend = tempConvo.getConversations(indexes);
+                                    System.out.println(tempConvo.getConversations(indexes));
+
+                                    writer.write(toSend);
+                                    writer.println();
+                                    writer.flush();
+
+                                    //choice is what the user chooses
+                                    int choice = Integer.parseInt(reader.readLine()) - 1;
+                                    //makes an active conversation here, used in some spots later
+                                    Conversation activeConvo = tempConvo.getConversation(indexes.get(choice));
+                                    //messages sent in the conversation are all in one string and sent to the client
+                                    String messages = tempConvo.getMessages(indexes.get(choice));
+                                    writer.write(messages);
+                                    writer.println();
+                                    writer.flush();
+                                    //at this point the user is given four option of what to do
+                                    do {
+                                        String convoChoice = reader.readLine();
+                                        switch (convoChoice) {
+                                            case "1":
+                                                writer.write("1");
+                                                writer.println();
+                                                writer.flush();
+
+                                                indexes = tempConvo.inConversations(user);
+                                                toSend = tempConvo.getConversations(indexes);
+
+                                                writer.write(toSend);
+                                                writer.println();
+                                                writer.flush();
+
+                                                choice = Integer.parseInt(reader.readLine()) - 1;
+                                                activeConvo = tempConvo.getConversation(indexes.get(choice));
+                                                messages = tempConvo.getMessages(indexes.get(choice));
+                                                writer.write(messages);
+                                                writer.println();
+                                                writer.flush();
+                                                System.out.println(messages);
+
+                                                break;
+
+                                            case "2":
+                                                writer.write("2");
+                                                writer.println();
+                                                writer.flush();
+
+                                                String message = reader.readLine();
+                                                activeConvo.sendMessage(message, user.getUserName());
+
+                                                writer.write("done");
+                                                writer.println();
+                                                writer.flush();
+
+                                            case "3":
+                                                writer.write("3");
+                                                writer.println();
+                                                writer.flush();
+                                                StringBuilder members = new StringBuilder();
+                                                CSVReadWrite users = new CSVReadWrite("users.csv");
+                                                users.readFile();
+                                                String username2 = "";
+                                                String goAgain = "";
+                                                try {
+                                                    members.append(user.getIdentifier());
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                do {
+                                                    try {
+                                                        username2 = reader.readLine();
+                                                    } catch (Exception ie) {
+                                                        ie.printStackTrace();
+                                                        break;
+                                                    }
+                                                    boolean nameExist = false;
+                                                    for (String line : users.getLines()) {
+                                                        if (line.split(",")[1].equals(username2)) {
+                                                            members.append("~");
+                                                            members.append(line.split(",")[0]);
+                                                            nameExist = true;
+                                                        }
+                                                    }
+                                                    if (nameExist) {
+                                                        writer.write("true");
+                                                        writer.println();
+                                                        writer.flush();
+                                                    } else {
+                                                        goAgain = "y";
+                                                        writer.write("false");
+                                                        writer.println();
+                                                        writer.flush();
+                                                    }
+                                                } while (goAgain.equals("y"));
+                                                String[] memberString = members.toString().split("~");
+                                                Conversation tempName = new Conversation(memberString);
+                                            case "4":
+                                                writer.write("4");
+                                                writer.println();
+                                                writer.flush();
+                                        }
+                                    } while (!toSend.equals("test")) ;
+                                    break;
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } while (ifContinue && !choice.equalsIgnoreCase("exit"));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 } finally {
                     try {
                         reader.close();
