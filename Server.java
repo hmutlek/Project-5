@@ -228,6 +228,7 @@ class Functions extends Thread {
                                     writer.println();
                                     writer.flush();
                                     temp = reader.readLine();
+                                    //if the user clicks all the needed button to delete client sends server "yes"
                                     if (temp.equalsIgnoreCase("yes")) {
                                         user.deleteAccount();
                                         writer.write("account deleted");
@@ -250,21 +251,67 @@ class Functions extends Thread {
                                     //the only thing it does is exist so runConversation can happen
                                     String[] tempStrings = new String[]{"me"};
                                     Conversation tempConvo = new Conversation(tempStrings, "0", "doesn't matter");
+                                    //set the identifier of the user if it was not already in the user object
                                     user.setIdentifier(user.getIdentifier());
+                                    //gets an ArrayList of all the conversations that the user's index is in
                                     ArrayList<String> indexes = tempConvo.inConversations(user);
+                                    //gets a string of the names of the conversations to send to the client
                                     String toSend = tempConvo.getConversations(indexes);
 
                                     writer.write(toSend);
                                     writer.println();
                                     writer.flush();
 
+                                    //choice is what the user chooses
                                     int choice = Integer.parseInt(reader.readLine()) - 1;
-                                    System.out.println(choice);
+                                    //makes an active conversation here, used in some spots later
+                                    Conversation activeConvo = tempConvo.getConversation(indexes.get(choice));
+                                    //messages sent in the conversation are all in one string and sent to the client
                                     String messages = tempConvo.getMessages(indexes.get(choice));
                                     writer.write(messages);
                                     writer.println();
                                     writer.flush();
-                                    //send messages that need to be sent
+                                    //at this point the user is given four option of what to do
+                                    do {
+                                        String convoChoice = reader.readLine();
+                                        switch (convoChoice) {
+                                            case "1":
+                                                writer.write("1");
+                                                writer.println();
+                                                writer.flush();
+
+                                                indexes = tempConvo.inConversations(user);
+                                                toSend = tempConvo.getConversations(indexes);
+
+                                                writer.write(toSend);
+                                                writer.println();
+                                                writer.flush();
+
+                                                choice = Integer.parseInt(reader.readLine()) - 1;
+                                                activeConvo = tempConvo.getConversation(indexes.get(choice));
+                                                messages = tempConvo.getMessages(indexes.get(choice));
+                                                writer.write(messages);
+                                                writer.println();
+                                                writer.flush();
+                                                System.out.println(messages);
+
+                                                break;
+
+                                            case "2":
+                                                writer.write("2");
+                                                writer.println();
+                                                writer.flush();
+
+                                                String message = reader.readLine();
+                                                activeConvo.sendMessage(message, user.getUserName());
+
+                                                writer.write("done");
+                                                writer.println();
+                                                writer.flush();
+                                        }
+                                    } while(!toSend.equals("test"));
+                                    break;
+
 
                             }
                         } catch (IOException e) {

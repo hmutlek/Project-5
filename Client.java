@@ -90,7 +90,7 @@ public class Client {
                             break;
 
                         case "4":
-                            System.out.println(reader.read());
+                            reader.read(); //don't know what this part is reading but the whole thing does not work if this is not here
                             String conversationsTemp = reader.readLine();
                             conversationsTemp = conversationsTemp.replaceAll("~","\n");
                             int size = Integer.parseInt(conversationsTemp.split(",")[1]);
@@ -100,9 +100,35 @@ public class Client {
 
                             String messages = reader.readLine();
                             messages = messages.replaceAll("~", "\n");
-                            System.out.println(messages);
-                            run.showMessages(content, frame, messages, socket, writer);
-                            reader.readLine();
+                            boolean exit = false;
+                            do {
+                                run.showMessages(content, frame, messages, socket, writer);
+                                String newChoice = reader.readLine();
+                                switch (newChoice) {
+                                    case "1":
+                                        conversationsTemp = reader.readLine();
+                                        conversationsTemp = conversationsTemp.replaceAll("~", "\n");
+                                        size = Integer.parseInt(conversationsTemp.split(",")[1]);
+                                        conversations = conversationsTemp.split(",")[0];
+                                        run.showConversations(content, frame, conversations, size, socket, writer);
+                                        String testOne = reader.readLine();
+
+                                        messages = reader.readLine();
+                                        messages = messages.replaceAll("~", "\n");
+
+                                        run.showMessages(content, frame, messages, socket, writer);
+                                        String testTwo = reader.readLine();
+                                        reader.readLine();
+                                        break;
+
+                                    case "2":
+                                        run.sendMessage(content, frame, socket, writer);
+                                        reader.readLine();
+                                        //this one is really simple which is nice
+                                        //it just opens the message sending gui send to the server there,
+                                        //and the server writes the message to messages there
+                                }
+                            } while (!exit); // fourth option from the buttons is exit change the boolean there
 
                             break;
                         // no loop here because if the user exits out then it ends

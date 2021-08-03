@@ -329,33 +329,41 @@ public class GuiHandler {
         south.add(sendMessage);
         south.add(newConvo);
         south.add(quit);
-        frame.validate();
+
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("4");
+                writer.println();
+                writer.flush();
             }
         });
 
         viewConvo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("1");
+                writer.println();
+                writer.flush();
             }
         });
 
         sendMessage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("2");
+                writer.println();
+                writer.flush();
             }
         });
 
         newConvo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tell server go here
+                writer.write("3");
+                writer.println();
+                writer.flush();
             }
         });
         content.add(south, BorderLayout.SOUTH);
-
+        frame.validate();
 
     }
 
@@ -371,10 +379,9 @@ public class GuiHandler {
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String toSend = message.getText();
-                //even though text box is 55 message can be as long as the user wants
-                //send message to server
-                //wait for server to say it was sent
-                JOptionPane.showMessageDialog(null, "Message has been sent", "It Sent", JOptionPane.INFORMATION_MESSAGE);
+                writer.write(toSend);
+                writer.println();
+                writer.flush();
             }
         });
 
