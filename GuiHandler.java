@@ -383,10 +383,11 @@ public class GuiHandler {
         frame.getContentPane().removeAll();
         frame.revalidate();
         frame.repaint();
-        JButton enter = new JButton("Enter");
-        JTextField message = new JTextField(55);
         JLabel centerMessage = new JLabel("Enter message to send");
         centerMessage.setHorizontalAlignment(JLabel.CENTER);
+
+        JTextField message = new JTextField(20);
+        JButton enter = new JButton("Enter");
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String toSend = message.getText();
